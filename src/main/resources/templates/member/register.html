@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>회원가입</title>
+    <script>
+        function handleRegister(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch('/members/membership', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+                .then(response => response.json().then(data => ({status: response.status, body: data})))
+                .then(({status, body}) => {
+                    document.getElementById('emailError').innerText = '';
+                    document.getElementById('passwordError').innerText = '';
+                    document.getElementById('successMsg').innerText = '';
+                    if (status !== 201) {
+                        if (Array.isArray(body)) {
+                            body.forEach(msg => {
+                                if (msg.includes('이메일')) document.getElementById('emailError').innerText = msg;
+                                if (msg.includes('비밀번호')) document.getElementById('passwordError').innerText = msg;
+                            });
+                        } else {
+                            document.getElementById('emailError').innerText = body;
+                        }
+                    } else {
+                        document.getElementById('successMsg').innerText = '회원가입이 완료되었습니다.';
+                        localStorage.setItem('jwtToken', body.token);
+                    }
+                });
+        }
+    </script>
+</head>
+<body>
+<h2>회원가입</h2>
+<form id="registerForm" onsubmit="handleRegister(event)">
+    <label for="email">이메일:</label>
+    <input type="email" id="email" required/><br/>
+    <div id="emailError" style="color:red;"></div>
+
+    <label for="password">비밀번호:</label>
+    <input type="password" id="password" required/><br/>
+    <div id="passwordError" style="color:red;"></div>
+
+    <button type="submit">가입</button>
+</form>
+<button type="button" onclick="location.href='/members/login'">로그인</button>
+<div id="successMsg" style="color:green; margin-top:10px;"></div>
+</body>
+</html>

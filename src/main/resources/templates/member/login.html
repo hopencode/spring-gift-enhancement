@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>로그인</title>
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch('/members/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+                .then(response => response.json().then(data => ({status: response.status, body: data})))
+                .then(({status, body}) => {
+                    document.getElementById('emailError').innerText = '';
+                    document.getElementById('passwordError').innerText = '';
+                    if (status !== 200) {
+                        if (Array.isArray(body)) {
+                            body.forEach(msg => {
+                                if (msg.includes('이메일')) document.getElementById('emailError').innerText = msg;
+                                if (msg.includes('비밀번호')) document.getElementById('passwordError').innerText = msg;
+                            });
+                        }
+                    } else {
+                        localStorage.setItem('jwtToken', body.token);
+                        window.location.href = '/members/myInfo';
+                    }
+                });
+        }
+    </script>
+</head>
+<body>
+<h2>로그인</h2>
+<form id="loginForm" onsubmit="handleLogin(event)">
+    <label for="email">이메일:</label>
+    <input type="email" id="email" required/><br/>
+    <div id="emailError" style="color:red;"></div>
+
+    <label for="password">비밀번호:</label>
+    <input type="password" id="password" required/><br/>
+    <div id="passwordError" style="color:red;"></div>
+
+    <button type="submit">로그인</button>
+</form>
+</body>
+</html>
