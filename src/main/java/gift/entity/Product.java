@@ -1,10 +1,27 @@
 package gift.entity;
 
+import gift.dto.ProductRequestDto;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "product")
+@Access(AccessType.FIELD)
 public class Product {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(length = 15, nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private Integer price;
+
+    @Column(length = 512, nullable = false)
     private String imageUrl;
+
+    public Product() {}
 
     public Product(Long id, String name, Integer price, String imageUrl) {
         this.id = id;
@@ -18,14 +35,16 @@ public class Product {
     }
 
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 
     public Integer getPrice() { return price; }
-    public void setPrice(Integer price) { this.price = price; }
 
     public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public void update(ProductRequestDto requestDto) {
+        this.name = requestDto.getName();
+        this.price = requestDto.getPrice();
+        this.imageUrl = requestDto.getImageUrl();
+    }
 }

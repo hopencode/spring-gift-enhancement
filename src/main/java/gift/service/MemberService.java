@@ -3,16 +3,10 @@ package gift.service;
 import gift.auth.JwtAuth;
 import gift.dto.*;
 import gift.entity.Member;
-import gift.entity.Product;
 import gift.exception.MemberExceptions;
 import gift.repository.MemberRepositoryInterface;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class MemberService implements MemberServiceInterface {
