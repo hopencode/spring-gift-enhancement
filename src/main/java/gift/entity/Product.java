@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "product")
 public class Product {
 
     @Id

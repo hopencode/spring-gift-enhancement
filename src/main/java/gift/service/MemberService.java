@@ -3,33 +3,26 @@ package gift.service;
 import gift.auth.JwtAuth;
 import gift.dto.*;
 import gift.entity.Member;
-import gift.entity.Product;
 import gift.exception.MemberExceptions;
-import gift.repository.MemberRepositoryInterface;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
+import gift.repository.MemberRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 @Service
-public class MemberService implements MemberServiceInterface {
-    private final MemberRepositoryInterface memberRepository;
+public class MemberService {
+    private final MemberRepository memberRepository;
     private final JwtAuth jwtAuth;
 
-    public MemberService(@Qualifier("MemberRepository") MemberRepositoryInterface memberRepository, JwtAuth jwtAuth) {
+    public MemberService(MemberRepository memberRepository, JwtAuth jwtAuth) {
         this.memberRepository = memberRepository;
         this.jwtAuth = jwtAuth;
     }
 
-    @Override
     public boolean isEmailExists(String email) {
         return memberRepository.findByEmail(email).isPresent();
     }
 
-    @Override
     public MemberResponseDto register(MemberRequestDto requestDto) {
         if (memberRepository.findByEmail(requestDto.getEmail()).isPresent()) {
             throw new MemberExceptions.EmailAlreadyExistsException(requestDto.getEmail());
@@ -41,13 +34,13 @@ public class MemberService implements MemberServiceInterface {
         return new MemberResponseDto(token);
     }
 
-    @Override
     public MemberResponseDto login(MemberRequestDto requestDto) {
-        if (memberRepository.findByEmail(requestDto.getEmail()).isEmpty()) {
-            throw new MemberExceptions.MemberNotFoundException(requestDto.getEmail());
+        Member member = memberRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new MemberExceptions.MemberNotFoundException(requestDto.getEmail()));
+
+        if (!member.getPassword().equals(requestDto.getPassword())) {
+            throw new MemberExceptions.InvalidPasswordException();
         }
-        Member member = memberRepository.findByEmailAndPassword(requestDto.getEmail(), requestDto.getPassword())
-                .orElseThrow(MemberExceptions.InvalidPasswordException::new);
 
         String token = jwtAuth.createJwtToken(member);
         return new MemberResponseDto(token);

@@ -1,9 +1,22 @@
 package gift.entity;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "Member")
 public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
+    public Member() {}
 
     public Member(Long id, String email, String password) {
         this.id = id;
