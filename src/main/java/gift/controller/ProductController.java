@@ -45,7 +45,7 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequestDto dto) {
         return productService.updateProduct(id, dto)
-                .map(updatedProduct -> new ResponseEntity<>(updatedProduct, HttpStatus.OK))
+                .map(responseDto -> new ResponseEntity<>(responseDto, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 

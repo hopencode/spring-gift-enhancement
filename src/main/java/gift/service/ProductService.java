@@ -4,19 +4,16 @@ import gift.dto.PageResponseDto;
 import gift.dto.ProductRequestDto;
 import gift.dto.ProductResponseDto;
 import gift.entity.Product;
+import gift.exception.ProductExceptions;
 import gift.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductService implements ProductServiceInterface {
+public class ProductService {
 
     private final ProductRepository productRepository;
 
@@ -24,40 +21,80 @@ public class ProductService implements ProductServiceInterface {
         this.productRepository = productRepository;
     }
 
-    @Override
     public ProductResponseDto addProduct(ProductRequestDto requestDto) {
-        Product product = new Product(requestDto.getName(), requestDto.getPrice(), requestDto.getImageUrl());
-        Product savedProduct = productRepository.save(product);
-        return new ProductResponseDto(savedProduct.getId(), savedProduct.getName(), savedProduct.getPrice(), savedProduct.getImageUrl());
+
+        String name = requestDto.getName();
+        // validateUsingKakaoName(name); 추후 수정
+
+        Product product = new Product(
+                requestDto.getName(),
+                requestDto.getPrice(),
+                requestDto.getImageUrl()
+        );
+
+        Product addedProduct = productRepository.save(product);
+
+        return new ProductResponseDto(addedProduct.getId(), addedProduct.getName(), addedProduct.getPrice(), addedProduct.getImageUrl());
     }
 
-    @Override
-    public PageResponseDto getPageProducts(int page, int pageSize) {
-        return null;
-    }
-
-    @Override
     public List<ProductResponseDto> findAllProducts() {
-        return List.of();
+        List<Product> productList = productRepository.findAll();
+        List<ProductResponseDto> products = new ArrayList<>();
+        for (Product product : productList) {
+            products.add(new ProductResponseDto(
+                    product.getId(),
+                    product.getName(),
+                    product.getPrice(),
+                    product.getImageUrl()
+            ));
+        }
+        return products;
     }
 
-    @Override
     public Optional<ProductResponseDto> findProductById(Long id) {
-        return Optional.empty();
+        return productRepository.findById(id)
+                .map(product -> new ProductResponseDto(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getImageUrl()
+                ));
     }
 
-    @Override
     public Optional<ProductResponseDto> updateProduct(Long id, ProductRequestDto requestDto) {
-        return Optional.empty();
+
+        String name = requestDto.getName();
+        // validateUsingKakaoName(name);
+
+        checkProductExist(id);
+
+        Product product = new Product(
+                id,
+                requestDto.getName(),
+                requestDto.getPrice(),
+                requestDto.getImageUrl()
+        );
+
+        Product updatedProduct = productRepository.save(product);
+        return Optional.of(new ProductResponseDto(updatedProduct.getId(), updatedProduct.getName(),
+                                        updatedProduct.getPrice(), updatedProduct.getImageUrl()));
     }
 
-    @Override
     public void deleteProduct(Long id) {
+        checkProductExist(id);
 
+        productRepository.deleteById(id);
     }
 
-    @Override
     public int countAllProducts() {
-        return 0;
+        return (int) productRepository.count();
+    }
+
+
+
+    private void checkProductExist(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new ProductExceptions.ProductNotFoundException(id);
+        }
     }
 }
