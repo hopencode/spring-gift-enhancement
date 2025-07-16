@@ -1,7 +1,6 @@
 package gift;
 
 import gift.entity.Product;
-import gift.repository.WishListRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;

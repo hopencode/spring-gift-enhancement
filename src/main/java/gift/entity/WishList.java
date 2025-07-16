@@ -1,0 +1,30 @@
+package gift.entity;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "WishList")
+public class WishList {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private Long productId;
+
+    public WishList() {}
+    public WishList(String email, Long productId) {
+        this.email = email;
+        this.productId = productId;
+    }
+
+    public Long getId() { return id; }
+
+    public String getEmail() { return email; }
+
+    public Long getProductId() { return productId; }
+}
