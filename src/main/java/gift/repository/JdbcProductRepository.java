@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository("jdbcProductRepository")
-public class JdbcProductRepository implements ProductRepositoryInterface{
+public class JdbcProductRepository{
 
     private JdbcTemplate jdbcTemplate;
 
@@ -18,7 +18,6 @@ public class JdbcProductRepository implements ProductRepositoryInterface{
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
     public Product addProduct(Product product) {
         String sql = "INSERT INTO product (name, price, imageUrl) VALUES (?, ?, ?)";
         jdbcTemplate.update(sql, product.getName(), product.getPrice(), product.getImageUrl());
@@ -26,19 +25,16 @@ public class JdbcProductRepository implements ProductRepositoryInterface{
         return product;
     }
 
-    @Override
     public List<Product> findAllProducts() {
         String sql = "SELECT * FROM product";
         return jdbcTemplate.query(sql, this::mapRowToProduct);
     }
 
-    @Override
     public List<Product> findProductsByPage(int offset, int limit) {
         String sql = "SELECT * FROM product ORDER BY id LIMIT ? OFFSET ?";
         return jdbcTemplate.query(sql, this::mapRowToProduct, limit, offset);
     }
 
-    @Override
     public Optional<Product> findProductById(Long id) {
         String sql = "SELECT * FROM product WHERE id = ?";
 
@@ -50,7 +46,6 @@ public class JdbcProductRepository implements ProductRepositoryInterface{
         }
     }
 
-    @Override
     public Optional<Product> updateProduct(Long id, Product product) {
         String sql = "UPDATE product SET name = ?, price = ?, imageUrl = ? WHERE id = ?";
 
@@ -63,14 +58,12 @@ public class JdbcProductRepository implements ProductRepositoryInterface{
         }
     }
 
-    @Override
     public boolean deleteProduct(Long id) {
         String sql = "DELETE FROM product WHERE id = ?";
         int deleted = jdbcTemplate.update(sql, id);
         return deleted > 0;
     }
 
-    @Override
     public int countAllProducts() {
         String sql = "SELECT COUNT(*) FROM product";
         Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
