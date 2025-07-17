@@ -17,9 +17,13 @@ public class WishList {
     private Long productId;
 
     public WishList() {}
-    public WishList(String email, Long productId) {
+    public WishList(Long id, String email, Long productId) {
+        this.id = id;
         this.email = email;
         this.productId = productId;
+    }
+    public WishList(String email, Long productId) {
+        this(null, email, productId);
     }
 
     public Long getId() { return id; }

@@ -2,8 +2,6 @@ package gift;
 
 import gift.entity.Member;
 import gift.repository.MemberRepository;
-import org.h2.engine.Role;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -16,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class MemberRepositoryJpaTest {
+class MemberRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
 
@@ -33,7 +31,7 @@ class MemberRepositoryJpaTest {
     }
 
     @Test
-    void 회원_계정_정상_검색() {
+    void findByEmail_정상_테스트() {
         Member member = new Member(null, "test@email.com", "12345678");
         memberRepository.save(member);
 
@@ -44,7 +42,7 @@ class MemberRepositoryJpaTest {
     }
 
     @Test
-    public void 없는_회원_계정_검색() {
+    public void findByEmail_없는_회원_계정_검색_테스트() {
         Optional<Member> found = memberRepository.findByEmail("not_exist@email.com");
 
         assertThat(found).isNotPresent();
