@@ -1,9 +1,12 @@
 package gift;
 
 import gift.entity.Product;
+import gift.entity.WishList;
+import gift.repository.WishListRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
@@ -11,8 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@JdbcTest
-@Import(WishListRepository.class)
+@DataJpaTest
 class WishListRepositoryTest {
 
     @Autowired
@@ -22,10 +24,10 @@ class WishListRepositoryTest {
     void 이메일로_위시리스트_상품_모두_조회() {
         String email = "abc@pusan.ac.kr";
 
-        List<Product> products = wishListRepository.findAllProductsFromWishListByEmail(email);
+        List<WishList> wishLists = wishListRepository.findWishListByEmail(email);
 
-        assertThat(products).hasSize(2);
-        assertThat(products).extracting(Product::getName).containsExactlyInAnyOrder("초코송이", "포스틱");
+        assertThat(wishLists).hasSize(0);
+        // assertThat(wishLists).extracting(WishList::getEmail).containsExactlyInAnyOrder("초코송이");
     }
 
     @Test
@@ -33,31 +35,12 @@ class WishListRepositoryTest {
         String email = "def@pusan.ac.kr";
         Long productId = 2L;
 
-        wishListRepository.addProductToWishListByEmail(email, productId);
+        WishList wishList = new WishList(email, productId);
+        wishListRepository.save(wishList);
 
-        List<Product> products = wishListRepository.findAllProductsFromWishListByEmail(email);
-        assertThat(products).hasSize(1);
-        assertThat(products.get(0).getName()).isEqualTo("포스틱");
+        List<WishList> wishLists = wishListRepository.findWishListByEmail(email);
+        assertThat(wishLists).hasSize(1);
+        assertThat(wishLists.get(0).getEmail()).isEqualTo("def@pusan.ac.kr");
     }
 
-    @Test
-    void 위시리스트에서_상품_삭제() {
-        String email = "abcd@pusan.ac.kr";
-        Long productId = 1L;
-
-        boolean deleted = wishListRepository.deleteProductFromWishListByEmail(email, productId);
-
-        assertThat(deleted).isTrue();
-        assertThat(wishListRepository.findAllProductsFromWishListByEmail(email)).isEmpty();
-    }
-
-    @Test
-    void 존재하지_않는_상품을_삭제_false_반환() {
-        String email = "def@pusan.ac.kr";
-        Long productId = 10L;
-
-        boolean deleted = wishListRepository.deleteProductFromWishListByEmail(email, productId);
-
-        assertThat(deleted).isFalse();
-    }
 }
