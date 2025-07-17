@@ -19,22 +19,23 @@ class ProductRepositoryTest {
     void 상품_저장_정상_테스트() {
         Product product = new Product(null, "저장테스트", 1000, "https://테스트.png");
 
-        var actual = productRepository.save(product);
+        var result = productRepository.save(product);
 
         assertAll(
-                () -> assertThat(actual.getId()).isNotNull(),
-                () -> assertThat(actual.getName()).isEqualTo(product.getName())
+                () -> assertThat(result.getId()).isNotNull(),
+                () -> assertThat(result.getName()).isEqualTo(product.getName())
         );
     }
 
     @Test
-    void 저장된_상품_정상_검색_테스트() {
+    void 저장된_상품_정상_id_검색_테스트() {
         Product product = new Product(null, "검색테스트", 1000, "https://테스트.png");
 
-        var temp = productRepository.save(product);
+        var saved = productRepository.save(product);
 
-        var actual = productRepository.findById(temp.getId()).get().getName();
+        var found = productRepository.findById(saved.getId()).get().getName();
 
-        assertThat(actual).isEqualTo(product.getName());
+        assertThat(found).isNotNull();
+        assertThat(found).isEqualTo(product.getName());
     }
 }

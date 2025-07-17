@@ -24,11 +24,11 @@ class MemberRepositoryJpaTest {
     void 회원_계정_정상_저장() {
         Member member = new Member(null, "test@email.com", "12345678");
 
-        var actual = memberRepository.save(member);
+        var result = memberRepository.save(member);
 
         assertAll(
-                () -> assertThat(actual.getId()).isNotNull(),
-                () -> assertThat(actual.getEmail()).isEqualTo(member.getEmail())
+                () -> assertThat(result.getId()).isNotNull(),
+                () -> assertThat(result.getEmail()).isEqualTo(member.getEmail())
         );
     }
 
