@@ -1,6 +1,5 @@
 package gift.service;
 
-import gift.dto.PageResponseDto;
 import gift.dto.ProductRequestDto;
 import gift.dto.ProductResponseDto;
 import gift.entity.Product;
@@ -85,12 +84,6 @@ public class ProductService {
 
         productRepository.deleteById(id);
     }
-
-    public int countAllProducts() {
-        return (int) productRepository.count();
-    }
-
-
 
     private void checkProductExist(Long id) {
         if (!productRepository.existsById(id)) {
