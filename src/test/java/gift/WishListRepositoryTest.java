@@ -51,7 +51,7 @@ class WishListRepositoryTest {
         WishList wish = new WishList(null, "del@email.com", 1L);
         WishList saved = wishListRepository.save(wish);
 
-        wishListRepository.deleteById(saved.getProductId());
+        wishListRepository.deleteById(saved.getId());
 
         Optional<WishList> found = wishListRepository.findByEmailAndProductId(saved.getEmail(), saved.getProductId());
         assertThat(found).isNotPresent();

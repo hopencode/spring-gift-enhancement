@@ -9,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
@@ -41,9 +42,9 @@ public class ProductControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(products).isNotNull();
         assertThat(products).isInstanceOf(List.class);
-        assertThat(products.get(0).getName()).isEqualTo("초코송이");
-        assertThat(products.get(0).getPrice()).isEqualTo(1000);
-        assertThat(products.get(0).getImageUrl()).startsWith("https://");
+        assertThat(products.getFirst().getName()).isEqualTo("초코송이");
+        assertThat(products.getFirst().getPrice()).isEqualTo(1000);
+        assertThat(products.getFirst().getImageUrl()).startsWith("https://");
     }
 
     @Test

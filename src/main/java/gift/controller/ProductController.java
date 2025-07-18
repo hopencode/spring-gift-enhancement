@@ -2,11 +2,16 @@ package gift.controller;
 
 import gift.dto.ProductRequestDto;
 import gift.dto.ProductResponseDto;
+import gift.entity.Product;
 import gift.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -29,10 +34,16 @@ public class ProductController {
     }
 
     @GetMapping
+    public Page<Product> getProducts(
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return productService.getProductsByPage(pageable);
+    }
+
+    @GetMapping("/all")
     public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
         List<ProductResponseDto> products = productService.findAllProducts();
 
-        return ResponseEntity.status( HttpStatus.OK).body(products);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

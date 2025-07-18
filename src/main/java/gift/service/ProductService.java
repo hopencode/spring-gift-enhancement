@@ -6,6 +6,8 @@ import gift.entity.Product;
 import gift.exception.ProductExceptions;
 import gift.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,10 @@ public class ProductService {
         Product addedProduct = productRepository.save(product);
 
         return new ProductResponseDto(addedProduct.getId(), addedProduct.getName(), addedProduct.getPrice(), addedProduct.getImageUrl());
+    }
+
+    public Page<Product> getProductsByPage(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     public List<ProductResponseDto> findAllProducts() {
