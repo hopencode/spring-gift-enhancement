@@ -42,8 +42,8 @@ class WishListRepositoryTest {
 
         List<WishList> wishLists = wishListRepository.findWishListByEmail(saved.getEmail());
         assertThat(wishLists).hasSize(1);
-        assertThat(wishLists.get(0).getEmail()).isEqualTo("add@email.com");
-        assertThat(wishLists.get(0).getProductId()).isEqualTo(1L);
+        assertThat(wishLists.getFirst().getEmail()).isEqualTo("add@email.com");
+        assertThat(wishLists.getFirst().getProductId()).isEqualTo(1L);
     }
 
     @Test

@@ -17,10 +17,6 @@ public class MemberService {
         this.jwtAuth = jwtAuth;
     }
 
-    public boolean isEmailExists(String email) {
-        return memberRepository.findByEmail(email).isPresent();
-    }
-
     public MemberResponseDto register(MemberRequestDto requestDto) {
         if (memberRepository.findByEmail(requestDto.getEmail()).isPresent()) {
             throw new MemberExceptions.EmailAlreadyExistsException(requestDto.getEmail());
@@ -42,5 +38,14 @@ public class MemberService {
 
         String token = jwtAuth.createJwtToken(member);
         return new MemberResponseDto(token);
+    }
+
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberExceptions.MemberNotFoundException(email));
+    }
+
+    public boolean isEmailExists(String email) {
+        return memberRepository.findByEmail(email).isPresent();
     }
 }
