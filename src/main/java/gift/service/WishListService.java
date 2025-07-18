@@ -9,6 +9,8 @@ import gift.repository.WishListRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +27,10 @@ public class WishListService {
         this.wishListRepository = wishListRepository;
         this.memberService = memberService;
         this.productService = productService;
+    }
+
+    public Page<WishList> getWishListsByEmailAndPage(String email, Pageable pageable) {
+        return wishListRepository.findWishListByEmail(email, pageable);
     }
 
     public List<ProductResponseDto> findAllProductsFromWishList(String email) {
