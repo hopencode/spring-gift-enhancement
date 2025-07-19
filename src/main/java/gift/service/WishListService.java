@@ -2,56 +2,57 @@ package gift.service;
 
 import gift.dto.ProductResponseDto;
 import gift.dto.WishListProductRequestDto;
+import gift.entity.Member;
 import gift.entity.Product;
 import gift.entity.WishList;
-import gift.exception.MemberExceptions;
-import gift.exception.ProductExceptions;
-import gift.repository.MemberRepository;
-import gift.repository.ProductRepository;
 import gift.repository.WishListRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WishListService {
     private final WishListRepository wishListRepository;
-    private final MemberRepository memberRepository;
-    private final ProductRepository productRepository;
+    private final MemberService memberService;
+    private final ProductService productService;
 
     public WishListService(WishListRepository wishListRepository,
-                           MemberRepository memberRepository,
-                           ProductRepository productRepository) {
+                           MemberService memberService,
+                           ProductService productService) {
         this.wishListRepository = wishListRepository;
-        this.memberRepository = memberRepository;
-        this.productRepository = productRepository;
+        this.memberService = memberService;
+        this.productService = productService;
+    }
+
+    public Page<WishList> getWishListsByEmailAndPage(String email, Pageable pageable) {
+        return wishListRepository.findWishListByEmail(email, pageable);
     }
 
     public List<ProductResponseDto> findAllProductsFromWishList(String email) {
         validateMemberExists(email);
         List<WishList> wishLists = wishListRepository.findWishListByEmail(email);
-        List<ProductResponseDto> productResponseDtoList = new ArrayList<>();
-        for (WishList wishList : wishLists) {
-            Product product = productRepository.findById(wishList.getProductId())
-                    .orElseThrow(() -> new ProductExceptions.ProductNotFoundException(wishList.getProductId()));
 
-            productResponseDtoList.add(new ProductResponseDto(
-                    product.getId(),
-                    product.getName(),
-                    product.getPrice(),
-                    product.getImageUrl()));
-        }
-        return productResponseDtoList;
+        return wishLists.stream()
+                .map(wishList -> {
+                    Product product = productService.findById(wishList.getProductId());
+                    return new ProductResponseDto(
+                            product.getId(),
+                            product.getName(),
+                            product.getPrice(),
+                            product.getImageUrl());
+                })
+                .collect(Collectors.toList());
     }
 
     public List<ProductResponseDto> addProductToWishListByEmail(String email, WishListProductRequestDto requestDto) {
         validateMemberExists(email);
         Long productId = requestDto.getproductId();
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductExceptions.ProductNotFoundException(productId));
+        Product product = productService.findById(productId);
         WishList wish = new WishList(email, productId);
         wishListRepository.save(wish);
 
@@ -67,9 +68,6 @@ public class WishListService {
     }
 
     private void validateMemberExists(String email) {
-        if (memberRepository.findByEmail(email).isEmpty()) {
-            throw new MemberExceptions.MemberNotFoundException(email);
-        }
+        Member member = memberService.findByEmail(email);
     }
-
 }

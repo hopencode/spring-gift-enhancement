@@ -42,8 +42,8 @@ class WishListRepositoryTest {
 
         List<WishList> wishLists = wishListRepository.findWishListByEmail(saved.getEmail());
         assertThat(wishLists).hasSize(1);
-        assertThat(wishLists.get(0).getEmail()).isEqualTo("add@email.com");
-        assertThat(wishLists.get(0).getProductId()).isEqualTo(1L);
+        assertThat(wishLists.getFirst().getEmail()).isEqualTo("add@email.com");
+        assertThat(wishLists.getFirst().getProductId()).isEqualTo(1L);
     }
 
     @Test
@@ -51,7 +51,7 @@ class WishListRepositoryTest {
         WishList wish = new WishList(null, "del@email.com", 1L);
         WishList saved = wishListRepository.save(wish);
 
-        wishListRepository.deleteById(saved.getProductId());
+        wishListRepository.deleteById(saved.getId());
 
         Optional<WishList> found = wishListRepository.findByEmailAndProductId(saved.getEmail(), saved.getProductId());
         assertThat(found).isNotPresent();

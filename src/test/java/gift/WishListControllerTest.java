@@ -51,9 +51,9 @@ public class WishListControllerTest {
 
         assertThat(products).hasSize(1);
 
-        assertThat(products.get(0).getId()).isEqualTo(1);
-        assertThat(products.get(0).getName()).isEqualTo("초코송이");
-        assertThat(products.get(0).getPrice()).isEqualTo(1000);
+        assertThat(products.getFirst().getId()).isEqualTo(1);
+        assertThat(products.getFirst().getName()).isEqualTo("초코송이");
+        assertThat(products.getFirst().getPrice()).isEqualTo(1000);
     }
 
     @Test

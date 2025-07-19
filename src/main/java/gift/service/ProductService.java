@@ -1,12 +1,13 @@
 package gift.service;
 
-import gift.dto.PageResponseDto;
 import gift.dto.ProductRequestDto;
 import gift.dto.ProductResponseDto;
 import gift.entity.Product;
 import gift.exception.ProductExceptions;
 import gift.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,10 @@ public class ProductService {
         return new ProductResponseDto(addedProduct.getId(), addedProduct.getName(), addedProduct.getPrice(), addedProduct.getImageUrl());
     }
 
+    public Page<Product> getProductsByPage(Pageable pageable) {
+        return productRepository.findAll(pageable);
+    }
+
     public List<ProductResponseDto> findAllProducts() {
         List<Product> productList = productRepository.findAll();
         List<ProductResponseDto> products = new ArrayList<>();
@@ -51,14 +56,14 @@ public class ProductService {
         return products;
     }
 
-    public Optional<ProductResponseDto> findProductById(Long id) {
+    public ProductResponseDto findProductById(Long id) {
+        Product product = findById(id);
+        return new ProductResponseDto(product.getId(), product.getName(), product.getPrice(), product.getImageUrl());
+    }
+
+    public Product findById(Long id) {
         return productRepository.findById(id)
-                .map(product -> new ProductResponseDto(
-                        product.getId(),
-                        product.getName(),
-                        product.getPrice(),
-                        product.getImageUrl()
-                ));
+                .orElseThrow(() -> new ProductExceptions.ProductNotFoundException(id));
     }
 
     public Optional<ProductResponseDto> updateProduct(Long id, ProductRequestDto requestDto) {
@@ -85,12 +90,6 @@ public class ProductService {
 
         productRepository.deleteById(id);
     }
-
-    public int countAllProducts() {
-        return (int) productRepository.count();
-    }
-
-
 
     private void checkProductExist(Long id) {
         if (!productRepository.existsById(id)) {

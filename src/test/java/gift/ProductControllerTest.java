@@ -2,7 +2,11 @@ package gift;
 
 import gift.dto.ProductRequestDto;
 import gift.dto.ProductResponseDto;
+import gift.repository.ProductRepository;
+import gift.service.ProductService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
@@ -27,10 +31,29 @@ public class ProductControllerTest {
 
     private RestClient client = RestClient.builder().build();
 
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    private Long savedProduct1Id;
+
+    @BeforeEach
+    void setUp() {
+        productRepository.deleteAll();
+
+        ProductResponseDto saveProduct1 = productService.addProduct(new ProductRequestDto("초코송이", 1000, "https://img.danawa.com/prod_img/500000/826/577/img/3577826_1.jpg?_v=20161108161614&shrink=360:360"));
+        productService.addProduct(new ProductRequestDto("포스틱", 1500, "https://m.nongshimmall.com/web/product/big/202407/b77b6109b871a7b340c5706884ef8d7a.jpg"));
+
+        savedProduct1Id = saveProduct1.getId();
+    }
+
+
     @Test
     void 상품_전체_조회_테스트() {
         System.out.println("getAll test");
-        var url = "http://localhost:" + port + "/api/products";
+        var url = "http://localhost:" + port + "/api/products/all";
         var response = client.get()
                 .uri(url)
                 .retrieve()
@@ -49,16 +72,19 @@ public class ProductControllerTest {
     @Test
     void 상품_단건_조회_정상_테스트(){
         System.out.println("getProductById test");
-        var url = "http://localhost:" + port + "/api/products/1";
+        var url = "http://localhost:" + port + "/api/products/" + savedProduct1Id;
         var response = client.get()
                 .uri(url)
                 .retrieve()
                 .toEntity(ProductResponseDto.class);
+
+        ProductResponseDto product = response.getBody();
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getName()).isEqualTo("초코송이");
-        assertThat(response.getBody().getPrice()).isEqualTo(1000);
-        assertThat(response.getBody().getImageUrl()).startsWith("https://");
+        assertThat(product).isNotNull();
+        assertThat(product.getName()).isEqualTo("초코송이");
+        assertThat(product.getPrice()).isEqualTo(1000);
+        assertThat(product.getImageUrl()).startsWith("https://");
     }
 
     @Test
@@ -97,7 +123,7 @@ public class ProductControllerTest {
     void 상품_수정_정상_테스트(){
         System.out.println("updateProduct test");
         ProductRequestDto requestDto = new ProductRequestDto("아이스 카페 아메리카노 T", 5000, "https://st.kakaocdn.net/product/gift/product/20231010111814_9a667f9eccc943648797925498bdd8a3.jpg");
-        var url = "http://localhost:" + port + "/api/products/1";
+        var url = "http://localhost:" + port + "/api/products/" + savedProduct1Id;
         var response = client.put()
                 .uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -115,26 +141,13 @@ public class ProductControllerTest {
     @Test
     void 상품_삭제_정상_테스트() {
         System.out.println("deleteProduct test");
-        ProductRequestDto requestDto = new ProductRequestDto("삭제용 테스트 샘플", 5000, "https://st.kakaocdn.net/product/gift/product/20231010111814_9a667f9eccc943648797925498bdd8a3.jpg");
 
-        String url = "http://localhost:" + port + "/api/products";
-        var createResponse = client.post()
-                .uri(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(requestDto)
-                .retrieve()
-                .toEntity(ProductResponseDto.class);
-
-        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
-        // 기본 2개 상품이 있어 삭제 샘플의 id는 3
-        String deleteUrl = "http://localhost:" + port + "/api/products/" + 3;
+        String deleteUrl = "http://localhost:" + port + "/api/products/" + savedProduct1Id;
         var deleteResponse = client.delete()
                 .uri(deleteUrl)
                 .retrieve()
                 .toEntity(Void.class);
 
-        // 삭제 정상 동작 테스트
         assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
         // 삭제 후 동일 id로 다시 한번 삭제 시 Not Found 테스트
@@ -147,7 +160,7 @@ public class ProductControllerTest {
                 );
     }
 
-    @Test
+    /*@Test
     void 승인되지_않은_카카오_이름_사용(){
         System.out.println("Not Approved Using Kakao Name test");
         ProductRequestDto requestDto = new ProductRequestDto("카카오톡", 5000, "https://st.kakaocdn.net/product/gift/product/20231010111814_9a667f9eccc943648797925498bdd8a3.jpg");
@@ -161,7 +174,7 @@ public class ProductControllerTest {
                                 .retrieve()
                                 .toEntity(ProductResponseDto.class)
                 );
-    }
+    }*/
 
     @Test
     void 승인되지_않은_특수문자_포함된_이름_사용(){

@@ -30,7 +30,7 @@ public class MemberControllerTest {
     @Order(1)
     void 회원가입_잘못된_이메일_입력_테스트(){
         System.out.println("Member Register Not Valid Email test");
-        MemberRequestDto requestDto = new MemberRequestDto("qwertypusan.ac.kr", "12345678");
+        MemberRequestDto requestDto = new MemberRequestDto("qwerty@pusan.ac.kr", "12345678");
         var url = "http://localhost:" + port + "/api/members/membership";
         assertThatExceptionOfType(HttpClientErrorException.BadRequest.class)
                 .isThrownBy(
