@@ -37,7 +37,7 @@ public class ProductOptionService {
         Product product = productService.findById(productId);
 
         productOptionRepository.findByProductIdAndOptionName(productId, productOptionRequestDto.getOptionName())
-                .ifPresent(option -> {
+                .ifPresent(productOption -> {
                     throw new ProductOptionExceptions.DuplicateOptionException(productId);
                 });
 
