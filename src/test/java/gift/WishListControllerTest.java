@@ -36,7 +36,7 @@ public class WishListControllerTest {
     @Order(1)
     void 위시_리스트_조회_테스트(){
         System.out.println("Get WishList Product test");
-        var url = "http://localhost:" + port + "/api/wishlist";
+        var url = "http://localhost:" + port + "/api/wishlist/all";
         var response = client.get()
                 .uri(url)
                 .header("Authorization", "Bearer " + testJWTToken)
