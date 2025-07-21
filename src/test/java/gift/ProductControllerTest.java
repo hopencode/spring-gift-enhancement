@@ -41,6 +41,10 @@ public class ProductControllerTest {
 
     @BeforeEach
     void setUp() {
+        DBinit();
+    }
+
+    private void DBinit(){
         productRepository.deleteAll();
 
         ProductResponseDto saveProduct1 = productService.addProduct(new ProductRequestDto("초코송이", 1000, "https://img.danawa.com/prod_img/500000/826/577/img/3577826_1.jpg?_v=20161108161614&shrink=360:360"));
@@ -90,7 +94,7 @@ public class ProductControllerTest {
     @Test
     void 상품_단건_조회_없는_ID_상품_조회_시_Not_Found_테스트(){
         System.out.println("getProductById test");
-        var url = "http://localhost:" + port + "/api/products/5";
+        var url = "http://localhost:" + port + "/api/products/-1";
         assertThatExceptionOfType(HttpClientErrorException.NotFound.class)
                 .isThrownBy(
                         () -> client.get()
