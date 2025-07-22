@@ -9,10 +9,10 @@ public class ProductOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "option_name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String optionName;
 
-    @Column(name = "option_quantity", nullable = false)
+    @Column(name = "quantity", nullable = false)
     private int optionQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
