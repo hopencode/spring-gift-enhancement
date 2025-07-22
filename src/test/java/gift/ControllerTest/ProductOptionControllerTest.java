@@ -1,5 +1,6 @@
-package gift;
+package gift.ControllerTest;
 
+import gift.Application;
 import gift.dto.ProductOptionRequestDto;
 import gift.dto.ProductOptionResponseDto;
 import gift.dto.ProductRequestDto;
@@ -48,10 +49,12 @@ public class ProductOptionControllerTest {
 
     private Long savedProductId;
     private Long savedOptionId;
+    private String baseUrl;
 
     @BeforeEach
     void setUp() {
         DBinit();
+        baseUrl = "http://localhost:" + port + "/api/products/" + savedProductId + "/options";
     }
 
     private void DBinit(){
@@ -71,10 +74,9 @@ public class ProductOptionControllerTest {
 
     @Test
     void 옵션_전체_조회_테스트() {
-        String url = "http://localhost:" + port + "/api/products/" + savedProductId + "/options";
 
         var response = client.get()
-                .uri(url)
+                .uri(baseUrl)
                 .retrieve()
                 .toEntity(new ParameterizedTypeReference<List<ProductOptionResponseDto>>() {});
 
@@ -88,12 +90,11 @@ public class ProductOptionControllerTest {
 
     @Test
     void 옵션_추가_테스트() {
-        String url = "http://localhost:" + port + "/api/products/" + savedProductId + "/options";
 
         ProductOptionRequestDto requestDto = new ProductOptionRequestDto("대용량", 300, savedProductId);
 
         var response = client.post()
-                .uri(url)
+                .uri(baseUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(requestDto)
                 .retrieve()
@@ -109,7 +110,7 @@ public class ProductOptionControllerTest {
 
     @Test
     void 옵션_수정_테스트() {
-        String url = "http://localhost:" + port + "/api/products/" + savedProductId + "/options/" + savedOptionId;
+        String url = baseUrl + "/" + savedOptionId;
 
         ProductOptionRequestDto updateDto = new ProductOptionRequestDto("변경된 옵션", 50, savedProductId);
 
@@ -129,7 +130,7 @@ public class ProductOptionControllerTest {
 
     @Test
     void 옵션_수량_차감_테스트() {
-        String url = "http://localhost:" + port + "/api/products/" + savedProductId + "/options/" + savedOptionId + "/subtract";
+        String url = baseUrl + "/" + savedOptionId + "/subtract";
 
         ProductOptionRequestDto subtractDto = new ProductOptionRequestDto("기본 옵션", 20, savedProductId);
 
@@ -145,7 +146,7 @@ public class ProductOptionControllerTest {
 
     @Test
     void 옵션_삭제_테스트() {
-        String url = "http://localhost:" + port + "/api/products/" + savedProductId + "/options/" + savedOptionId;
+        String url = baseUrl + "/" + savedOptionId;
 
         var response = client.delete()
                 .uri(url)

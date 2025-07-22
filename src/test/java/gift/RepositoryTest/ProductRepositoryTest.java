@@ -1,4 +1,4 @@
-package gift;
+package gift.RepositoryTest;
 
 
 import gift.entity.Product;
