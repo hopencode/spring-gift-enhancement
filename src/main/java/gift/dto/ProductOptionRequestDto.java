@@ -1,5 +1,6 @@
 package gift.dto;
 
+import gift.entity.ProductOption;
 import jakarta.validation.constraints.*;
 
 public class ProductOptionRequestDto {

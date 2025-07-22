@@ -40,13 +40,7 @@ public class ProductOptionController {
             @PathVariable Long productId,
             @RequestBody @Valid ProductOptionRequestDto productOptionRequestDto
     ) {
-        ProductOption saved = productOptionService.addProductOption(productId, productOptionRequestDto);
-        ProductOptionResponseDto responseDto = new ProductOptionResponseDto(
-                saved.getId(),
-                saved.getOptionName(),
-                saved.getOptionQuantity(),
-                saved.getProduct().getId()
-        );
+        ProductOptionResponseDto responseDto = productOptionService.addProductOption(productId, productOptionRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
@@ -57,12 +51,7 @@ public class ProductOptionController {
             @PathVariable Long productOptionId,
             @RequestBody @Valid ProductOptionRequestDto productOptionRequestDto
     ) {
-        ProductOption updated = productOptionService.updateProductOption(productId, productOptionId, productOptionRequestDto);
-        ProductOptionResponseDto responseDto = new ProductOptionResponseDto(
-                updated.getOptionName(),
-                updated.getOptionQuantity(),
-                updated.getProduct().getId()
-        );
+        ProductOptionResponseDto responseDto = productOptionService.updateProductOption(productId, productOptionId, productOptionRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }

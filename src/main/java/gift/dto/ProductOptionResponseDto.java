@@ -1,5 +1,7 @@
 package gift.dto;
 
+import gift.entity.ProductOption;
+
 public class ProductOptionResponseDto {
     private Long id;
     private String optionName;
@@ -15,6 +17,13 @@ public class ProductOptionResponseDto {
     }
     public ProductOptionResponseDto(String optionName, int optionQuantity, Long productId) {
         this(null, optionName, optionQuantity, productId);
+    }
+
+    public ProductOptionResponseDto(ProductOption productOption) {
+        this.id = productOption.getId();
+        this.optionName = productOption.getOptionName();
+        this.optionQuantity = productOption.getOptionQuantity();
+        this.productId = productOption.getProduct().getId();
     }
 
     public Long getId() {

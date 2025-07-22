@@ -26,14 +26,10 @@ public class ProductOptionService {
     public Page<ProductOptionResponseDto> getProductOptionPageList(Long productId, Pageable pageable) {
         return productOptionRepository
                 .findAllByProductId(productId, pageable)
-                .map(productOption -> new ProductOptionResponseDto(
-                        productOption.getId(),
-                        productOption.getOptionName(),
-                        productOption.getOptionQuantity(),
-                        productOption.getProduct().getId()));
+                .map(ProductOptionResponseDto::new);
     }
 
-    public ProductOption addProductOption(Long productId, ProductOptionRequestDto productOptionRequestDto) {
+    public ProductOptionResponseDto addProductOption(Long productId, ProductOptionRequestDto productOptionRequestDto) {
         Product product = productService.findById(productId);
 
         productOptionRepository.findByProductIdAndOptionName(productId, productOptionRequestDto.getOptionName())
@@ -41,14 +37,13 @@ public class ProductOptionService {
                     throw new ProductOptionExceptions.DuplicateOptionException(productId);
                 });
 
-        return productOptionRepository.save(new ProductOption(
-                product,
-                productOptionRequestDto.getOptionName(),
-                productOptionRequestDto.getOptionQuantity()
-        ));
+        ProductOption productOption = productOptionRepository.save(new ProductOption(product, productOptionRequestDto.getOptionName(),
+                                                                                    productOptionRequestDto.getOptionQuantity()));
+
+        return new ProductOptionResponseDto(productOption);
     }
 
-    public ProductOption updateProductOption(Long productId, Long productOptionId, ProductOptionRequestDto productOptionRequestDto) {
+    public ProductOptionResponseDto updateProductOption(Long productId, Long productOptionId, ProductOptionRequestDto productOptionRequestDto) {
         Product product = productService.findById(productId);
 
         ProductOption productOption = productOptionRepository.findById(productOptionId)
@@ -70,7 +65,9 @@ public class ProductOptionService {
                 productOptionRequestDto.getOptionQuantity()
         );
 
-        return productOptionRepository.save(updatedOption);
+        ProductOption updatedProductOption = productOptionRepository.save(updatedOption);
+
+        return new ProductOptionResponseDto(updatedProductOption);
     }
 
     @Transactional
