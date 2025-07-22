@@ -24,23 +24,23 @@ public class ProductOptionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductOptionResponseDto>> getAllOptions(
+    public ResponseEntity<List<ProductOptionResponseDto>> getProductOptionPageList(
             @PathVariable Long productId,
             @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         List<ProductOptionResponseDto> productOptions = productOptionService
-                .getOptionList(productId, pageable)
+                .getProductOptionPageList(productId, pageable)
                 .getContent();
 
         return ResponseEntity.status(HttpStatus.OK).body(productOptions);
     }
 
     @PostMapping
-    public ResponseEntity<ProductOptionResponseDto> createOption(
+    public ResponseEntity<ProductOptionResponseDto> addProductOption(
             @PathVariable Long productId,
             @RequestBody @Valid ProductOptionRequestDto productOptionRequestDto
     ) {
-        ProductOption saved = productOptionService.addOption(productId, productOptionRequestDto);
+        ProductOption saved = productOptionService.addProductOption(productId, productOptionRequestDto);
         ProductOptionResponseDto responseDto = new ProductOptionResponseDto(
                 saved.getId(),
                 saved.getOptionName(),
@@ -52,12 +52,12 @@ public class ProductOptionController {
     }
 
     @PutMapping("/{productOptionId}")
-    public ResponseEntity<ProductOptionResponseDto> updateOption(
+    public ResponseEntity<ProductOptionResponseDto> updateProductOption(
             @PathVariable Long productId,
             @PathVariable Long productOptionId,
             @RequestBody @Valid ProductOptionRequestDto productOptionRequestDto
     ) {
-        ProductOption updated = productOptionService.updateOption(productId, productOptionId, productOptionRequestDto);
+        ProductOption updated = productOptionService.updateProductOption(productId, productOptionId, productOptionRequestDto);
         ProductOptionResponseDto responseDto = new ProductOptionResponseDto(
                 updated.getOptionName(),
                 updated.getOptionQuantity(),
@@ -68,11 +68,11 @@ public class ProductOptionController {
     }
 
     @PatchMapping("/{productOptionId}/subtract")
-    public ResponseEntity<Void> subtractOptionQuantity(
+    public ResponseEntity<Void> subtractProductOptionQuantity(
             @PathVariable("productOptionId") Long productOptionId,
             @RequestBody @Valid ProductOptionRequestDto productOptionRequestDto
     ) {
-        productOptionService.subtractQuantity(productOptionId, productOptionRequestDto.getOptionQuantity());
+        productOptionService.subtractProductOptionQuantity(productOptionId, productOptionRequestDto.getOptionQuantity());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -80,7 +80,7 @@ public class ProductOptionController {
     public ResponseEntity<Void> deleteProductOption(
             @PathVariable("productOptionId") Long productOptionId
     ) {
-        productOptionService.deleteOption(productOptionId);
+        productOptionService.deleteProductOption(productOptionId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

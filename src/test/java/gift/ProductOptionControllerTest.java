@@ -65,7 +65,7 @@ public class ProductOptionControllerTest {
         savedProductId = product.getId();
 
         ProductOptionRequestDto optionDto = new ProductOptionRequestDto("기본 옵션", 100, savedProductId);
-        ProductOption option = productOptionService.addOption(savedProductId, optionDto);
+        ProductOption option = productOptionService.addProductOption(savedProductId, optionDto);
         savedOptionId = option.getId();
     }
 

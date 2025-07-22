@@ -23,7 +23,7 @@ public class ProductOptionService {
         this.productService = productService;
     }
 
-    public Page<ProductOptionResponseDto> getOptionList(Long productId, Pageable pageable) {
+    public Page<ProductOptionResponseDto> getProductOptionPageList(Long productId, Pageable pageable) {
         return productOptionRepository
                 .findAllByProductId(productId, pageable)
                 .map(productOption -> new ProductOptionResponseDto(
@@ -33,11 +33,11 @@ public class ProductOptionService {
                         productOption.getProduct().getId()));
     }
 
-    public ProductOption addOption(Long productId, ProductOptionRequestDto productOptionRequestDto) {
+    public ProductOption addProductOption(Long productId, ProductOptionRequestDto productOptionRequestDto) {
         Product product = productService.findById(productId);
 
         productOptionRepository.findByProductIdAndOptionName(productId, productOptionRequestDto.getOptionName())
-                .ifPresent(productOption -> {
+                .ifPresent(option -> {
                     throw new ProductOptionExceptions.DuplicateOptionException(productId);
                 });
 
@@ -48,10 +48,10 @@ public class ProductOptionService {
         ));
     }
 
-    public ProductOption updateOption(Long productId, Long optionId, ProductOptionRequestDto productOptionRequestDto) {
+    public ProductOption updateProductOption(Long productId, Long productOptionId, ProductOptionRequestDto productOptionRequestDto) {
         Product product = productService.findById(productId);
 
-        ProductOption productOption = productOptionRepository.findById(optionId)
+        ProductOption productOption = productOptionRepository.findById(productOptionId)
                 .orElseThrow(() -> new NoSuchElementException("옵션을 찾을 수 없습니다."));
 
         if (productOption.getProduct().getId() != product.getId()) {
@@ -59,12 +59,12 @@ public class ProductOptionService {
         }
 
         productOptionRepository.findByProductIdAndOptionName(productOption.getProduct().getId(), productOptionRequestDto.getOptionName())
-                .ifPresent(o -> {
+                .ifPresent(option -> {
                     throw new ProductOptionExceptions.DuplicateOptionException(productOption.getProduct().getId());
                 });
 
         ProductOption updatedOption = new ProductOption(
-                optionId,
+                productOptionId,
                 productOption.getProduct(),
                 productOptionRequestDto.getOptionName(),
                 productOptionRequestDto.getOptionQuantity()
@@ -74,17 +74,17 @@ public class ProductOptionService {
     }
 
     @Transactional
-    public void subtractQuantity(Long optionId, int num) {
-        ProductOption productOption = productOptionRepository.findById(optionId)
+    public void subtractProductOptionQuantity(Long productOptionId, int num) {
+        ProductOption productOption = productOptionRepository.findById(productOptionId)
                 .orElseThrow(() -> new NoSuchElementException("옵션을 찾을 수 없습니다."));
 
         productOption.subOptionQuantity(num);
     }
 
-    public void deleteOption(Long optionId) {
-        productOptionRepository.findById(optionId)
+    public void deleteProductOption(Long productOptionId) {
+        productOptionRepository.findById(productOptionId)
                 .orElseThrow(() -> new NoSuchElementException("옵션을 찾을 수 없습니다."));
 
-        productOptionRepository.deleteById(optionId);
+        productOptionRepository.deleteById(productOptionId);
     }
 }
