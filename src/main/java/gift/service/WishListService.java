@@ -40,11 +40,7 @@ public class WishListService {
         return wishLists.stream()
                 .map(wishList -> {
                     Product product = productService.findById(wishList.getProductId());
-                    return new ProductResponseDto(
-                            product.getId(),
-                            product.getName(),
-                            product.getPrice(),
-                            product.getImageUrl());
+                    return new ProductResponseDto(product);
                 })
                 .collect(Collectors.toList());
     }
