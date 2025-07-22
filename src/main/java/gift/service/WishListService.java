@@ -38,10 +38,9 @@ public class WishListService {
         List<WishList> wishLists = wishListRepository.findWishListByEmail(email);
 
         return wishLists.stream()
-                .map(wishList -> {
-                    Product product = productService.findById(wishList.getProductId());
-                    return new ProductResponseDto(product);
-                })
+                .map(WishList::getProductId)
+                .map(productService::findById)
+                .map(ProductResponseDto::new)
                 .collect(Collectors.toList());
     }
 
